@@ -34,7 +34,7 @@ def mkdir_p(path):
             raise
 
 
-MAX_OUTPUT_SIZE = 5_000_000
+MAX_OUTPUT_SIZE = 6_000_000
 
 
 def get_blk_content(node, dctx: Optional[zstd.ZstdDecompressor]) -> bytes:
