@@ -19,3 +19,5 @@ src/wt_tools/_version.py
 
 # ipython
 .ipynb_checkpoints/
+
+pytest.ini
