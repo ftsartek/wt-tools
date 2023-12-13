@@ -1,5 +1,5 @@
 import pytest
-from wt_tools.replays_db.replays_db import ReplaysDb
+from src.wt_tools.replays_db.replays_db import ReplaysDb
 
 
 @pytest.fixture()

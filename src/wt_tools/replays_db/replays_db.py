@@ -7,11 +7,11 @@ import construct as ct
 from construct import this
 from typing_extensions import TypedDict
 from blk.binary import Fat
-from wt_tools.formats.wrpl_parser_ng import Header, Difficulty, SessionType
+from src.wt_tools.formats.wrpl_parser_ng import Header, SessionType
 
 here = Path(__file__).parent
 
-T = t.TypeVar('T')
+T = t.TypeVar("T")
 TableT = t.MutableMapping
 TablesT = t.MutableMapping[str, TableT]
 UsersT = t.MutableMapping[int, str]
@@ -41,32 +41,32 @@ class TableError(Error):
 
 class LoadSchemaError(SchemaError):
     def __str__(self):
-        return 'Ошибка при загрузке схемы {}'.format(self.name)
+        return "Ошибка при загрузке схемы {}".format(self.name)
 
 
 class ValidateSchemaError(SchemaError):
     def __str__(self):
-        return 'Ошибка при проверке схемы {}'.format(self.name)
+        return "Ошибка при проверке схемы {}".format(self.name)
 
 
 class LoadTableError(TableError):
     def __str__(self):
-        msg = 'Ошибка при загрузке таблицы {}'.format(self.name)
+        msg = "Ошибка при загрузке таблицы {}".format(self.name)
         if self.reason:
-            msg += f': {self.reason}'
+            msg += f": {self.reason}"
         return msg
 
 
 class ValidateTableError(TableError):
     def __str__(self):
-        return 'Ошибка при проверке таблицы {}: {}'.format(self.name, self.reason)
+        return "Ошибка при проверке таблицы {}: {}".format(self.name, self.reason)
 
 
 class SaveTableError(TableError):
     def __str__(self):
-        msg = 'Ошибка при сохранении таблицы {}'.format(self.name)
+        msg = "Ошибка при сохранении таблицы {}".format(self.name)
         if self.reason:
-            msg += f': {self.reason}'
+            msg += f": {self.reason}"
         return msg
 
 
@@ -91,12 +91,12 @@ def er_from(br: float) -> int:
     return int(round((br - 1) * 3, 0))
 
 
-schemas_root = here / 'schema'
+schemas_root = here / "schema"
 
 
 class SectionTransformer(cb.Validator):
     def __init__(self, *args, **kwargs):
-        kwargs['purge_unknown'] = True
+        kwargs["purge_unknown"] = True
         super().__init__(*args, **kwargs)
 
     def _normalize_coerce_int(self, value: str) -> int:
@@ -106,7 +106,7 @@ class SectionTransformer(cb.Validator):
         return values[0]
 
     def _normalize_coerce_rm_hidden(self, mm: t.MutableMapping[str, t.Any]):
-        to_remove = set(k for k in mm.keys() if k.startswith('__'))
+        to_remove = set(k for k in mm.keys() if k.startswith("__"))
         for k in to_remove:
             del mm[k]
         return mm
@@ -130,25 +130,27 @@ def clear_tables(tables: TablesT, names: t.Iterable[str]):
 
 
 WRPLCliFile = ct.Struct(
-    'header' / Header,
+    "header" / Header,
     ct.Seek(this.header.rez_offset),
-    'rez' / Fat,
+    "rez" / Fat,
 )
 
 
 class ReplaysDb:
-    tables_names = ('replays', 'users', 'units')
+    tables_names = ("replays", "users", "units")
 
-    def __init__(self, *, replays_path: t.Optional[Path] = None, db_path: t.Optional[Path] = None):
+    def __init__(
+        self, *, replays_path: t.Optional[Path] = None, db_path: t.Optional[Path] = None
+    ):
         self.tables = new_tables(self.tables_names)
         self.replays_path = replays_path
         self.db_path = db_path
 
     def _load_table(self, db_path: Path, name: str) -> TableT:
-        table_path = db_path / f'{name}.json'
+        table_path = db_path / f"{name}.json"
 
         try:
-            with open(table_path, encoding='utf8') as istream:
+            with open(table_path, encoding="utf8") as istream:
                 table = json.load(istream)
         except (OSError, json.JSONDecodeError) as e:
             raise LoadTableError(name) from e
@@ -157,7 +159,7 @@ class ReplaysDb:
 
     @staticmethod
     def _validated(table: TableT, name: str) -> TableT:
-        schema_path = schemas_root / f'{name}.json'
+        schema_path = schemas_root / f"{name}.json"
 
         try:
             with open(schema_path) as istream:
@@ -170,10 +172,10 @@ class ReplaysDb:
         except cb.SchemaError as e:
             raise ValidateSchemaError(name) from e
 
-        if not transformer({'_': table}):
+        if not transformer({"_": table}):
             raise ValidateTableError(name, transformer.errors)
 
-        return transformer.document['_']
+        return transformer.document["_"]
 
     def load(self, db_path: t.Optional[Path] = None):
         """
@@ -191,18 +193,18 @@ class ReplaysDb:
             db_path = self.db_path
 
         if db_path is None:
-            raise ValueError('не заданы db_path или self.db_path')
+            raise ValueError("не заданы db_path или self.db_path")
 
         for name in self.tables_names:
             table = self._load_table(db_path, name)
             self.tables[name] = self._validated(table, name)
 
     def _save_table(self, db_path: Path, name: str):
-        table_path = db_path / f'{name}.json'
+        table_path = db_path / f"{name}.json"
         table = self.tables[name]
 
         try:
-            with open(table_path, 'w', encoding='utf8') as ostream:
+            with open(table_path, "w", encoding="utf8") as ostream:
                 json.dump(table, ostream, indent=2)
         except OSError as e:
             raise SaveTableError(name) from e
@@ -219,38 +221,38 @@ class ReplaysDb:
             db_path = self.db_path
 
         if db_path is None:
-            raise ValueError('не заданы db_path или self.db_path')
+            raise ValueError("не заданы db_path или self.db_path")
 
         try:
             db_path.mkdir(parents=True, exist_ok=True)
         except OSError as e:
-            raise SaveTableError('*') from e
+            raise SaveTableError("*") from e
 
         for name in self.tables_names:
             self._save_table(db_path, name)
 
     @staticmethod
     def _split_map(doc) -> ReplayTablesT:
-        pi = doc['uiScriptsData']['playersInfo']
+        pi = doc["uiScriptsData"]["playersInfo"]
         info = {}
         users = {}
         units = {}
         for data in pi.values():
-            pid = data['id']
-            users[pid] = data['name']  # только последний ник при переименовании
-            for m in data['crafts_info'].values():
-                name = m['name']
+            pid = data["id"]
+            users[pid] = data["name"]  # только последний ник при переименовании
+            for m in data["crafts_info"].values():
+                name = m["name"]
                 if name not in units:
                     units[name] = {
-                        'rank': m['mrank'],  # экономический ранг
-                        'tier': m['rank']  # ступень
+                        "rank": m["mrank"],  # экономический ранг
+                        "tier": m["rank"],  # ступень
                     }
             info[pid] = {
-                'team': data['team'],
-                'rank': data['rank'],
-                'units': [m['name'] for m in data['crafts_info'].values()]
+                "team": data["team"],
+                "rank": data["rank"],
+                "units": [m["name"] for m in data["crafts_info"].values()],
             }
-        return {'info': info, 'users': users, 'units': units}
+        return {"info": info, "users": users, "units": units}
 
     def clear(self):
         """
@@ -264,26 +266,28 @@ class ReplaysDb:
             self.tables[name].update(tables[name])
 
     @staticmethod
-    def _from_replays(replays_path: Path, sid_pred: t.Callable[[int], bool] = None) -> TablesT:
-        section_schema_path = schemas_root / 'section.json'
+    def _from_replays(
+        replays_path: Path, sid_pred: t.Callable[[int], bool] = None
+    ) -> TablesT:
+        section_schema_path = schemas_root / "section.json"
 
         try:
             with open(section_schema_path) as istream:
                 section_schema = json.load(istream)
         except (OSError, json.JSONDecodeError) as e:
-            raise LoadSchemaError('section') from e
+            raise LoadSchemaError("section") from e
 
         try:
             section_transformer = SectionTransformer(section_schema)
         except cb.SchemaError as e:
-            raise ValidateSchemaError('section') from e
+            raise ValidateSchemaError("section") from e
 
         tables = new_tables(ReplaysDb.tables_names)
-        users = tables['users']
-        units = tables['units']
-        replays = tables['replays']
+        users = tables["users"]
+        units = tables["units"]
+        replays = tables["replays"]
 
-        for replay_path in replays_path.glob('*.wrpl'):
+        for replay_path in replays_path.glob("*.wrpl"):
             try:
                 if sid_pred is None:
                     wrpl = WRPLCliFile.parse_file(replay_path)
@@ -294,29 +298,34 @@ class ReplaysDb:
                     else:
                         continue
             except Exception as e:
-                print('SKIP {}: {}'.format(replay_path, e), file=sys.stderr)
+                print("SKIP {}: {}".format(replay_path, e), file=sys.stderr)
                 continue
 
             if wrpl.header.session_type != SessionType.RANDOM_BATTLE:
                 continue
 
             if not section_transformer(wrpl.rez):
-                raise ValidateTableError('section', section_transformer.errors)
+                raise ValidateTableError("section", section_transformer.errors)
 
             m = ReplaysDb._split_map(section_transformer.document)
             session_id = wrpl.header.session_id
 
             replays[session_id] = {
-                'difficulty': wrpl.header.difficulty.value,
-                'start_time':  wrpl.header.start_time,
-                'info': m['info'],
+                "difficulty": wrpl.header.difficulty.value,
+                "start_time": wrpl.header.start_time,
+                "info": m["info"],
             }
-            users.update(m['users'])
-            units.update(m['units'])
+            users.update(m["users"])
+            units.update(m["units"])
 
         return tables
 
-    def update_from_replays(self, *, replays_path: t.Optional[Path] = None, sid_pred: t.Callable[[int], bool] = None):
+    def update_from_replays(
+        self,
+        *,
+        replays_path: t.Optional[Path] = None,
+        sid_pred: t.Callable[[int], bool] = None,
+    ):
         """
         Создание таблиц по директории с повторами и их слияние с self.tables.
 
@@ -332,7 +341,7 @@ class ReplaysDb:
             replays_path = self.replays_path
 
         if replays_path is None:
-            raise ValueError('не заданы replays_path или db.replays_path')
+            raise ValueError("не заданы replays_path или db.replays_path")
 
         tables = ReplaysDb._from_replays(replays_path, sid_pred)
         self._update(tables)
@@ -344,4 +353,10 @@ class ReplaysDb:
         :return: строка {имя таблицы => число элементов 1-го уровня таблицы}.
         """
 
-        return '\n'.join(f'len {name} = {len(self.tables[name])}' for name in self.tables_names)
+        return "\n".join(
+            f"len {name} = {len(self.tables[name])}" for name in self.tables_names
+        )
+
+
+class Difficulty:
+    pass

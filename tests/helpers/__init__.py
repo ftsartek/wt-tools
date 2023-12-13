@@ -3,11 +3,11 @@ import pytest
 
 
 def _outdir_rpath(name):
-    return Path('tests', *name.split('.'))
+    return Path("tests", *name.split("."))
 
 
 def make_outpath(name: str):
-    @pytest.fixture(scope='module')
+    @pytest.fixture(scope="module")
     def outpath(buildpath: Path):
         path = buildpath / _outdir_rpath(name)
         path.mkdir(parents=True, exist_ok=True)
@@ -17,7 +17,7 @@ def make_outpath(name: str):
 
 
 def make_tmppath(name: str):
-    @pytest.fixture(scope='module')
+    @pytest.fixture(scope="module")
     def tmppath(tmp_path_factory):
         return tmp_path_factory.mktemp(name)
 
@@ -26,6 +26,6 @@ def make_tmppath(name: str):
 
 def check_path(path: Path, name: str):
     if path is None:
-        pytest.skip('Не настроен путь: {}'.format(name))
+        pytest.skip(f"Path not configured: {name}")
     elif not path.is_dir():
-        pytest.skip('Не директория: {}: {}'.format(name, path))
+        pytest.skip(f"Not a directory: {name}: {path}")

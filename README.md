@@ -31,7 +31,7 @@ python -m wt_tools.vromfs_unpacker ~/games/WarThunder/char.vromfs.bin --metadata
 Build executables:
 
 ```shell
-pip install -r requirements-build-exe.txt
+pip install -r requirements-win-build.txt
 python cx_setup.py build
 ```
 
