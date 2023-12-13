@@ -1,8 +1,19 @@
-from construct import Struct, Int32ul, Int16ul, Int8ul, Nibble, Const, IfThenElse, this, Bytes, BitStruct
+from construct import (
+    Struct,
+    Int32ul,
+    Int16ul,
+    Int8ul,
+    Nibble,
+    Const,
+    IfThenElse,
+    this,
+    Bytes,
+    BitStruct,
+)
 
 from .common import FlagsEnumCumulative
 
-'''
+"""
 typedef enum FLG_CONTIGUOUS_MIP {
     FLG_7ZIP = 0x40000000,
     FLG_ADDRU_MASK = 0xf,
@@ -26,14 +37,14 @@ typedef enum FLG_CONTIGUOUS_MIP {
     FLG_ZLIB = 0x80000000,
     FLG_ZSTD = 0x20000000
 } FLG_CONTIGUOUS_MIP;
-'''
+"""
 ddsx_flags_enum = FlagsEnumCumulative(
     Int32ul,
     FLG_7ZIP=0x40_000_000,
-    FLG_ADDRU_MASK=0xf,
-    FLG_ADDRV_MASK=0xf0,
+    FLG_ADDRU_MASK=0xF,
+    FLG_ADDRV_MASK=0xF0,
     FLG_ARRTEX=0x200_000,
-    FLG_COMPR_MASK=0xe0_000_000,
+    FLG_COMPR_MASK=0xE0_000_000,
     FLG_CONTIGUOUS_MIP=0x100,
     FLG_CUBTEX=0x800,
     FLG_GAMMA_EQ_1=0x8_000,
@@ -49,10 +60,10 @@ ddsx_flags_enum = FlagsEnumCumulative(
     FLG_REV_MIP_ORDER=0x40_000,
     FLG_VOLTEX=0x1_000,
     FLG_ZLIB=0x80_000_000,
-    FLG_ZSTD=0x20_000_000
+    FLG_ZSTD=0x20_000_000,
 )
 
-'''
+"""
 struct Header {
     uint label;
     uint d3dFormat;
@@ -70,7 +81,7 @@ struct Header {
     uint memSz;
     uint packedSz;
 };
-'''
+"""
 ddsx_header = Struct(
     "label" / Const(b"DDSx"),
     "d3dFormat" / Bytes(4),
@@ -83,7 +94,8 @@ ddsx_header = Struct(
     "depth" / Int16ul,
     "bitsPerPixel" / Int16ul,
     # this field added, from Embedded(BitStruct constrict package updating
-    "bits_" / BitStruct(
+    "bits_"
+    / BitStruct(
         "lQmip" / Nibble,
         "mQmip" / Nibble,
         "dxtShift" / Nibble,
@@ -95,9 +107,8 @@ ddsx_header = Struct(
 
 ddsx = Struct(
     "header" / ddsx_header,
-    "body" / IfThenElse(
-        this.header.packedSz != 0,
-        Bytes(this.header.packedSz),
-        Bytes(this.header.memSz)
-    )
+    "body"
+    / IfThenElse(
+        this.header.packedSz != 0, Bytes(this.header.packedSz), Bytes(this.header.memSz)
+    ),
 )

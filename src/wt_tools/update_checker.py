@@ -12,10 +12,25 @@ def main():
 @main.command(name="check")
 def check_versions_online():
     """check warthunder versions online"""
-    tag_list = ["", "dev", "dev-stable", "production-rc", "test", "nightly", "tournament", "experimental",
-                "ps4submission", "xbox-submission", "experimental2", "china-test", "china-dev"]
+    tag_list = [
+        "",
+        "dev",
+        "dev-stable",
+        "production-rc",
+        "test",
+        "nightly",
+        "tournament",
+        "experimental",
+        "ps4submission",
+        "xbox-submission",
+        "experimental2",
+        "china-test",
+        "china-dev",
+    ]
     headers = {"User-Agent": "wt-tools"}
-    versions_url = "https://yupmaster.gaijinent.com/yuitem/get_version.php?proj=warthunder&tag={}"
+    versions_url = (
+        "https://yupmaster.gaijinent.com/yuitem/get_version.php?proj=warthunder&tag={}"
+    )
 
     s = requests.Session()
     s.headers.update(headers)
@@ -36,12 +51,12 @@ def download_yup(tag):
     for line in r.text.split():
         # get the first good link
         if line.startswith("https"):
-            name = urlparse(line).path.strip('/')
+            name = urlparse(line).path.strip("/")
             r = requests.get(line, headers=headers)
-            with open("{}.{}".format(tag, name), 'wb') as f:
+            with open("{}.{}".format(tag, name), "wb") as f:
                 f.write(r.content)
             break
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

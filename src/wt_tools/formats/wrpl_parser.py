@@ -1,23 +1,41 @@
 import struct
 
-from construct import Enum, Int16ul, Const, Struct, Int32ub, Int32ul, Bytes, this, Int24ul, Seek, Switch, If,\
-    IfThenElse, Pass, Probe
+from construct import (
+    Int16ul,
+    Const,
+    Struct,
+    Int32ub,
+    Int32ul,
+    Bytes,
+    this,
+    Int24ul,
+    Seek,
+    IfThenElse,
+)
 
 from .common import zlib_stream
 
 
 # there should be better way to build this, but i don't know it, for now
 def simple_blk_build(obj):
-    return b"".join([obj.magic, struct.pack('>I', obj.unknown_0), struct.pack('<I', obj.blk_body_size), obj.blk_body])
+    return b"".join(
+        [
+            obj.magic,
+            struct.pack(">I", obj.unknown_0),
+            struct.pack("<I", obj.blk_body_size),
+            obj.blk_body,
+        ]
+    )
+
 
 wrpl_versions_list = {
-    "version_1_45": 0x889a,
-    "version_1_47": 0x88c8,
-    "version_1_49": 0x88ca,
-    "version_1_51": 0x88e7,
+    "version_1_45": 0x889A,
+    "version_1_47": 0x88C8,
+    "version_1_49": 0x88CA,
+    "version_1_51": 0x88E7,
     "version_1_63": 0x8964,
-    "version_1_63-99": 0x8a4b,
-    "version_1_99": 0x8aa9,
+    "version_1_63-99": 0x8A4B,
+    "version_1_99": 0x8AA9,
 }
 
 simple_blk = "blk" / Struct(
@@ -36,13 +54,11 @@ wrpl_file = "wrpl" / Struct(
     # there skip some data, not used now anyway
     # ...
     IfThenElse(
-        this.version >= wrpl_versions_list['version_1_63-99'],
+        this.version >= wrpl_versions_list["version_1_63-99"],
         Seek(0x444),
         IfThenElse(
-            this.version >= wrpl_versions_list['version_1_63'],
-            Seek(0x440),
-            Seek(0x450)
-        )
+            this.version >= wrpl_versions_list["version_1_63"], Seek(0x440), Seek(0x450)
+        ),
     ),
     "m_set" / simple_blk,
     "wrplu" / zlib_stream,

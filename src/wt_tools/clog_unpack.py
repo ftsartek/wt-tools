@@ -5,18 +5,33 @@ def xxor(data, key: list):
     d_data = bytearray(len(data))
     key_length = len(key)
     for i, c in enumerate(data):
-        d_data[i] = (c ^ key[i % key_length])
+        d_data[i] = c ^ key[i % key_length]
     return d_data
 
 
 def main():
     parser = argparse.ArgumentParser(description="Decrypt *.clog files")
-    parser.add_argument('-i', dest='in_file', required=True,
-                        type=argparse.FileType('rb'), help="*.clog file")
-    parser.add_argument('-k', dest='key_file', required=True,
-                        type=argparse.FileType('r'), help="file with decryption key")
-    parser.add_argument('-o', dest='out_file', required=True,
-                        type=argparse.FileType('wb'), help="output file")
+    parser.add_argument(
+        "-i",
+        dest="in_file",
+        required=True,
+        type=argparse.FileType("rb"),
+        help="*.clog file",
+    )
+    parser.add_argument(
+        "-k",
+        dest="key_file",
+        required=True,
+        type=argparse.FileType("r"),
+        help="file with decryption key",
+    )
+    parser.add_argument(
+        "-o",
+        dest="out_file",
+        required=True,
+        type=argparse.FileType("wb"),
+        help="output file",
+    )
 
     try:
         parse_result = parser.parse_args()
@@ -38,5 +53,5 @@ def main():
         f.write(xxor(data, key_data))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

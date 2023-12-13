@@ -1,9 +1,9 @@
-from wt_tools.blk_minify import minify
+from src.wt_tools.blk_minify import minify
 
 strip_options = {
-    'strip_empty_objects': False,
-    'strip_comment_objects': False,
-    'strip_disabled_objects': False
+    "strip_empty_objects": False,
+    "strip_comment_objects": False,
+    "strip_disabled_objects": False,
 }
 
 
@@ -83,8 +83,7 @@ def test_empty_file():
 
 
 def test_newlines():
-    data = \
-    """
+    data = """
     
     """
     expected = ""
@@ -100,8 +99,7 @@ def test_empty_object():
 
 
 def test_empty_object_with_newlines():
-    data = \
-    """
+    data = """
     some{
     }
     """

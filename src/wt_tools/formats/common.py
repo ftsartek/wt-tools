@@ -2,7 +2,17 @@ import os.path
 import sys
 import zlib
 
-from construct import Construct, Struct, Tell, Computed, Seek, this, FlagsEnum, Container, BitwisableString
+from construct import (
+    Construct,
+    Struct,
+    Tell,
+    Computed,
+    Seek,
+    this,
+    FlagsEnum,
+    Container,
+    BitwisableString,
+)
 from lark import Transformer, tree, lexer
 
 
@@ -12,7 +22,9 @@ class ZlibContext(Construct):
         super(ZlibContext, self).__init__()
 
     def _parse(self, stream, ctx, path):
-        ctx.decompressed_data, ctx.size_of_unused_data = self._zlib_decompress(stream.getvalue()[ctx.start_offset:])
+        ctx.decompressed_data, ctx.size_of_unused_data = self._zlib_decompress(
+            stream.getvalue()[ctx.start_offset :]
+        )
 
     def _zlib_decompress(self, data):
         zdo = zlib.decompressobj()
@@ -29,7 +41,9 @@ class FlagsEnumCumulative(FlagsEnum):
                 flags[enumentry.name] = enumentry.value
         self.flags = flags
         # keep reverse sorted flag values, so we can substract from our flag
-        self.flags_reverse_sorted = sorted(self.flags.items(), key=lambda x: x[1], reverse=True)
+        self.flags_reverse_sorted = sorted(
+            self.flags.items(), key=lambda x: x[1], reverse=True
+        )
 
     def _decode(self, obj, context, path):
         obj2 = Container()
@@ -53,23 +67,23 @@ zlib_stream = "zlib_stream" / Struct(
     "global_file_size" / Seek(0, 2),
     "decompressed_body" / Computed(this.decompressed_data),
     "end_offset" / Computed(this.global_file_size - this.unused_size),
-    Seek(this.end_offset)
+    Seek(this.end_offset),
 )
 
 
 def blk_transformer(strip_options):
     class BLKTransformer(Transformer):
         def var_value(self, s):
-            if type(s[0]) == str:
+            if isinstance(s[0], str):
                 return s[0]
-            elif type(s[0]) == tree.Tree:
-                return ''.join(s[0].children)
+            elif isinstance(s[0], tree.Tree):
+                return "".join(s[0].children)
             return s
 
         def var_name(self, s):
-            if type(s) == list:
+            if isinstance(s, list):
                 pass
-            return ''.join([value for value in s])
+            return "".join([value for value in s])
 
         def expr_end(self, s):
             return ";"
@@ -80,77 +94,77 @@ def blk_transformer(strip_options):
         def value_array_el(self, s):
             res = []
             for t in s:
-                if type(t) == list:
-                    res.append(''.join(t))
+                if isinstance(t, list):
+                    res.append("".join(t))
                 else:
                     res.append(t)
-            return ''.join(res)
+            return "".join(res)
 
         def value_array(self, s):
             res = []
             for t in s:
-                if type(t) == tree.Tree:
+                if isinstance(t, tree.Tree):
                     print("error in value_array?")
                     exit(1)
                 else:
                     res.append(t)
-            return ''.join(res)
+            return "".join(res)
 
         def key_type_value(self, s):
             res = []
             for t in s:
-                if type(t) == list:
+                if isinstance(t, list):
                     res.append(t[0])
                 else:
                     res.append(t)
-            return ''.join(res)
+            return "".join(res)
 
         def named_object(self, s):
             # better remove node, than transform it?
             res = []
-            if strip_options.get('strip_comment_objects', False):
-                if s[0] == 'comment':
-                    return ''
+            if strip_options.get("strip_comment_objects", False):
+                if s[0] == "comment":
+                    return ""
             # disabled objects starts with __ in mission editor:  __unitRespawn{
-            if strip_options.get('strip_disabled_objects', False):
-                if s[0].startswith('__'):
-                    return ''
+            if strip_options.get("strip_disabled_objects", False):
+                if s[0].startswith("__"):
+                    return ""
             for t in s:
                 # skip newline token
-                if type(t) == lexer.Token and t.type == 'NEWLINE':
+                if isinstance(t, lexer.Token) and t.type == "NEWLINE":
                     pass
                 # and empty string, from collapsed objects
-                elif t == '':
+                elif t == "":
                     pass
                 else:
                     res.append(t)
-            if strip_options.get('strip_empty_objects', False):
+            if strip_options.get("strip_empty_objects", False):
                 # there smth in object, except it's name plus braces
                 if len(res) > 3:
-                    return ''.join(res)
+                    return "".join(res)
                 else:
-                    return ''
+                    return ""
             else:
-                return ''.join(res)
+                return "".join(res)
 
         def numbers_list(self, s):
-            return ''.join(s)
+            return "".join(s)
 
         def values(self, s):
-            return ''.join(s)
+            return "".join(s)
 
         def r_include(self, s):
-            return ' '.join(s)
+            return " ".join(s)
 
         def values_in_named_object(self, s):
-            return ''.join(s)
+            return "".join(s)
 
     return BLKTransformer()
 
 
 def get_tool_path() -> os.PathLike:
     tool_path = None
-    if getattr(sys, 'frozen', False):
+    if getattr(sys, "frozen", False):
         # frozen
         tool_path = os.path.dirname(sys.executable)
     else:
