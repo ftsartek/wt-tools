@@ -1,53 +1,31 @@
 ## War Thunder resource extraction tools
 
-Tools that help you extract resources from game: fonts, textures, FM/DM of tanks/planes/ships, parameters of weapons, and other interesting stuff.
+A set of tools to extract resources from Gaijin's proprietary formats. 
 
-It also should work for Cuisine Royale and Enlisted games.
-
-All new features in [new-format](https://github.com/kotiq/wt-tools/tree/new-format) branch.
+Based on [kotiq's new-format](https://github.com/kotiq/wt-tools/tree/new-format) branch, which itself is based on Klensy's work. 
+The main goal of forking it was to make some small tweaks to ensure it works with the latest War Thunder data, and to update dependencies as Python 3.7 is now end-of-life. Plus, 3.11 is faster!
 ## Installation
 
-#### From Git
+Check the [releases](https://github.com/ftsartek/wt-tools/releases) page for prebuilt binaries for Windows.
 
-Build requirements:
+If you're more familiar with Python, you might prefer to use the Python package directly. You can either download it and run it as you would any Python scripts, or alternatively install it with pip as a module:
 
-1. VS Build Tools for Windows from [here](https://visualstudio.microsoft.com/downloads/?q=build+tools).
-2. Python 3.7.* from [here](https://www.python.org/downloads/) or PyPy 3.7.* from [here](https://www.pypy.org/download.html).
-
-Clone the repo and install as a package:
-
-```shell
-git clone https://github.com/kotiq/wt-tools
-cd wt-tools
-pip install .
-```
-
-An usage example:
-
-```shell
-python -m wt_tools.vromfs_unpacker ~/games/WarThunder/char.vromfs.bin --metadata -O meta.json
-``` 
-
-Build executables:
-
-```shell
-pip install -r requirements-win-build.txt
-python cx_setup.py build
-```
-
-#### Hard way
-1. Download latest 3.7.* python x86_64 version from [here](https://www.python.org/downloads/).
-2. Run installer, check box with "Add Python 3.7 to PATH".
-3. Download scripts ("Download ZIP" button), extract somewhere.
-4. Run scripts from console, as described lower.
-
-#### Easy way
-1. Download compiled files (exe files, compressed in archive) from [here](https://github.com/klensy/wt-tools/releases), **no python** required.
-2. Unzip archive.  
-
-If you want to unpack textures, you need to find (file not provided) and place `oo2core_6_win64.dll` file to wt-tools directory, near ddsx_unpack.exe.
+    git clone https://github.com/ftsartek/wt-tools
+    cd wt-tools
+    pip install .
 
 ## Usage
+
+### As Python
+All of the following examples still pertain to using this as a Python module, simply replace the executable launch, so:
+
+    vromfs_unpacker.exe char.vromfs.bin
+
+Becomes
+
+    python -m wt_tools.vromfs_unpacker char.vromfs.bin
+
+### As executables
 
 #### vromfs_unpacker
 Tool for unpacking game archives, this archives can contain any type of data:
@@ -126,8 +104,10 @@ For example, for minimum size:
 
     blk_minify.exe --strip_all some_mission.blk some_mission_minified.blk
 
-## Errors?
-Try to launch tools from commandline, it should print some error.
+## Issues & Errors
+As you've read above, some tools are untested. 
 
-##  Would you like to know more?
+If you encounter any issues, please open an issue on GitHub. Include whatever info you can (most errors should include a stacktrace, this will help immensely).
+
+## Klensy's interesting info page
 Read [wiki](https://github.com/klensy/wt-tools/wiki).
