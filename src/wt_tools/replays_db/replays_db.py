@@ -7,7 +7,7 @@ import construct as ct
 from construct import this
 from typing_extensions import TypedDict
 from blk.binary import Fat
-from src.wt_tools.formats.wrpl_parser_ng import Header, SessionType
+from ..formats.wrpl_parser_ng import Header, SessionType
 
 here = Path(__file__).parent
 

@@ -8,8 +8,8 @@ import pylzma
 import zstandard
 
 try:
-    from formats.common import get_tool_path
-    from formats.ddsx_parser import ddsx
+    from .formats.common import get_tool_path
+    from .formats.ddsx_parser import ddsx
 except ImportError:
     from src.wt_tools.formats.common import get_tool_path
     from src.wt_tools.formats.ddsx_parser import ddsx

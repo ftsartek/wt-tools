@@ -2,7 +2,7 @@ import os.path
 import argparse
 
 try:
-    from formats.wrpl_parser import wrpl_file, simple_blk_build
+    from .formats.wrpl_parser import wrpl_file, simple_blk_build
 except ImportError:
     from src.wt_tools.formats.wrpl_parser import wrpl_file, simple_blk_build
 

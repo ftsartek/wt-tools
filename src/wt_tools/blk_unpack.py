@@ -11,7 +11,7 @@ import click
 from lark import Lark, LarkError
 
 try:
-    from formats.common import get_tool_path
+    from .formats.common import get_tool_path
 except ImportError:
     from src.wt_tools.formats.common import get_tool_path
 

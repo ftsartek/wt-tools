@@ -24,7 +24,7 @@ import blk.text as txt
 import blk.json as jsn
 
 try:
-    from formats.wrpl_parser_ng import WRPLCliFile
+    from .formats.wrpl_parser_ng import WRPLCliFile
 except ImportError:
     from src.wt_tools.formats.wrpl_parser_ng import WRPLCliFile
 

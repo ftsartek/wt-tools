@@ -6,7 +6,7 @@ import typing as t
 import click
 
 try:
-    import blk_unpack as bbf3
+    from . import blk_unpack as bbf3
 except ImportError:
     import src.wt_tools.blk_unpack as bbf3
 import blk.binary as bin

@@ -5,7 +5,7 @@ from typing import AnyStr, Dict
 from lark import Lark
 
 try:
-    from formats.common import blk_transformer, get_tool_path
+    from .formats.common import blk_transformer, get_tool_path
 except ImportError:
     from src.wt_tools.formats.common import blk_transformer, get_tool_path
 

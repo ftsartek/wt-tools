@@ -10,7 +10,7 @@ import click
 import zstandard as zstd
 
 try:
-    from formats.vromfs_parser import vromfs_file
+    from .formats.vromfs_parser import vromfs_file
 except ImportError:
     from src.wt_tools.formats.vromfs_parser import vromfs_file
 

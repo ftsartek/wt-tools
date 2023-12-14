@@ -9,7 +9,7 @@ import click
 from multiprocessing_logging import install_mp_handler
 
 try:
-    import blk_unpack as bbf3
+    from . import blk_unpack as bbf3
 except ImportError:
     import src.wt_tools.blk_unpack as bbf3
 import blk.binary as bin

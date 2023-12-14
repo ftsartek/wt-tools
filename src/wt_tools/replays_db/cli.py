@@ -3,7 +3,7 @@ from collections import Counter
 from operator import itemgetter
 from pathlib import Path
 import sys
-from src.wt_tools.replays_db.replays_db import (
+from ..replays_db.replays_db import (
     ReplaysDb,
     Error,
     er_from,
